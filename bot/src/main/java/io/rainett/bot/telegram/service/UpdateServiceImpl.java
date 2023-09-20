@@ -19,16 +19,20 @@ public class UpdateServiceImpl implements UpdateService {
     @Override
     public void processUpdate(Update update) {
         Object botAction = botActionContainer.findByUpdate(update);
-        Method[] methods = botAction.getClass().getDeclaredMethods();
-        Method method = Arrays.stream(methods)
-                .filter(m -> m.getParameterCount() == 1
-                        && m.getParameterTypes()[0].equals(Update.class))
-                .findAny()
-                .orElseThrow(() -> new RunnableMethodNotFound(botAction));
+        Method method = getRunnableMethod(botAction);
         try {
             method.invoke(botAction, update);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Method getRunnableMethod(Object botAction) {
+        Method[] methods = botAction.getClass().getDeclaredMethods();
+        return Arrays.stream(methods)
+                .filter(m -> m.getParameterCount() == 1
+                        && m.getParameterTypes()[0].equals(Update.class))
+                .findAny()
+                .orElseThrow(() -> new RunnableMethodNotFound(botAction));
     }
 }
