@@ -1,6 +1,5 @@
 package io.rainett.bot.telegram.controller;
 
-import io.rainett.bot.telegram.Bot;
 import io.rainett.bot.telegram.service.UpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,7 @@ public class UpdateController {
 
     @PostMapping("/")
     public BotApiMethod<?> onUpdateReceived(@RequestBody Update update) {
-        System.out.println("Received an update");
+        System.out.println("Received an update with id = [" + update.getUpdateId() + "]");
         updateService.processUpdate(update);
         return null;
     }
