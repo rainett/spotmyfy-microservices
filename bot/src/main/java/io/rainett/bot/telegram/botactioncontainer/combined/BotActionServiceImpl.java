@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Service
@@ -21,6 +23,7 @@ public class BotActionServiceImpl implements BotActionService {
 
     private static final Map<Predicate<Update>, UpdateType> UPDATE_TYPE_MAP = new LinkedHashMap<>();
     private static final Map<Predicate<Message>, MessageType> MESSAGE_TYPE_MAP = new LinkedHashMap<>();
+    private static final Map<UpdateType, Function<Update, Message>> UPDATES_MESSAGE_MAP = new HashMap<>();
 
     static {
         UPDATE_TYPE_MAP.put(Update::hasChatJoinRequest, UpdateType.CHAT_JOIN_REQUEST);
@@ -40,6 +43,11 @@ public class BotActionServiceImpl implements BotActionService {
 
         MESSAGE_TYPE_MAP.put(Message::isCommand, MessageType.COMMAND);
         MESSAGE_TYPE_MAP.put(Message::hasText, MessageType.TEXT);
+
+        UPDATES_MESSAGE_MAP.put(UpdateType.MESSAGE, Update::getMessage);
+        UPDATES_MESSAGE_MAP.put(UpdateType.EDITED_MESSAGE, Update::getEditedMessage);
+        UPDATES_MESSAGE_MAP.put(UpdateType.CHANNEL_POST, Update::getChannelPost);
+        UPDATES_MESSAGE_MAP.put(UpdateType.EDITED_CHANNEL_POST, Update::getEditedChannelPost);
     }
 
     private final DefaultAction defaultAction;
@@ -55,8 +63,9 @@ public class BotActionServiceImpl implements BotActionService {
     private CombinedType getCombinedTypeFromUpdate(Update update) {
         UpdateType updateType = getUpdateType(update);
         MessageType messageType = null;
-        if (update.hasMessage()) {
-            messageType = getMessageType(update.getMessage());
+        Message message = UPDATES_MESSAGE_MAP.get(updateType).apply(update);
+        if (message != null) {
+            messageType = getMessageType(message);
         }
         return new CombinedType(updateType, messageType);
     }

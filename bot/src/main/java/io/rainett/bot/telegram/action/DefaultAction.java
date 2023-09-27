@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class DefaultAction {
 
     public void emptyMethod(Update update) {
-        log.error("This is default BotAction. No suitable BotAction was found for update with id = [" + update.getUpdateId() + "]");
+        log.error("No suitable BotAction was found for update with id = [" + update.getUpdateId() + "]");
     }
 
 
