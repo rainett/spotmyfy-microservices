@@ -1,12 +1,13 @@
-package io.rainett.bot.telegram.annotation.update;
+package io.rainett.bot.telegram.annotation;
 
 import io.rainett.bot.telegram.action.enumerations.UpdateType;
-import io.rainett.bot.telegram.annotation.BotAction;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@BotAction(UpdateType.MY_CHAT_MEMBER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MyChatMember {
+@Component
+public @interface ActionMatcherAnnotation {
+    UpdateType value();
 }

@@ -1,6 +1,6 @@
 package io.rainett.bot.telegram.service;
 
-import io.rainett.bot.telegram.botactioncontainer.BotActionContainer;
+import io.rainett.bot.telegram.action.ActionContainer;
 import io.rainett.bot.telegram.exception.RunnableMethodNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class UpdateServiceImpl implements UpdateService {
 
-    private final BotActionContainer botActionContainer;
+    private final ActionContainer actionContainer;
 
     @Override
     public void processUpdate(Update update) {
-        Object botAction = botActionContainer.findByUpdate(update);
+        Object botAction = actionContainer.findByUpdate(update);
         Method method = getRunnableMethod(botAction);
         try {
             method.invoke(botAction, update);
